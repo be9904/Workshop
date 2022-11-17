@@ -27,7 +27,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Offset: 0
-    - _RimPower: 3.85
+    - _RimPower: 3
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _InnerColor: {r: 0.078431375, g: 0, b: 4, a: 0.7058824}
