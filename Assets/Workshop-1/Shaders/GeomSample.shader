@@ -7,8 +7,6 @@ Shader "Custom/GeomSample"
         _RimPower("Rim Power", Range(1, 5)) = 1
         
         _Offset("Offset", Float) = 0
-        
-        _MainTex ("Albedo (RGB)", 2D) = "white" {}
     }
     SubShader
     {
@@ -32,14 +30,16 @@ Shader "Custom/GeomSample"
             #pragma target 3.0
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-
-            Texture2D _MainTex;
+            
+            Texture2D _NoiseTex;
+            SamplerState sampler_NoiseTex;
             float _Offset;
 
             CBUFFER_START(UnityPerMaterial)
             half4 _OuterColor;
             half4 _InnerColor;
             float _RimPower;
+            float _Noise;
             CBUFFER_END
 
             struct Attributes
@@ -54,9 +54,10 @@ Shader "Custom/GeomSample"
                 float4 cpos : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float3 wpos : TEXCOORD1;
-                float3 viewDir : TEXCOORD2;
+                float3 opos : TEXCOORD2;
+                float3 viewDir : TEXCOORD3;
                 float3 normal : NORMAL;
-                float offset : TEXCOORD3;
+                float noise : TEXCOORD4;
             };
             
             v2f vert(Attributes i)
@@ -65,9 +66,10 @@ Shader "Custom/GeomSample"
                 o.cpos = TransformObjectToHClip(i.vertex);
                 o.uv = i.uv;
                 o.wpos = TransformObjectToWorld(i.vertex);
+                o.opos = i.vertex.xyz;
                 o.viewDir = normalize(_WorldSpaceCameraPos.xyz - TransformObjectToWorld(i.vertex.xyz));
                 o.normal = TransformObjectToWorldNormal(i.normal);
-                o.offset = pow(1 - dot(o.normal, o.viewDir), _RimPower);
+                o.noise = _NoiseTex.SampleLevel(sampler_NoiseTex, i.uv, 0).a;
                 
                 return o;
             }
@@ -85,9 +87,11 @@ Shader "Custom/GeomSample"
                 i[1].normal = faceNormal;
                 i[2].normal = faceNormal;
 
-                i[0].wpos.xyz += .01f * _Offset * faceNormal;
-                i[1].wpos.xyz += .01f * _Offset * faceNormal;
-                i[2].wpos.xyz += .01f * _Offset * faceNormal;
+                float avgNoise = (i[0].noise + i[1].noise + i[2].noise) / 3;
+
+                i[0].wpos.xyz += avgNoise * .1f * _Offset * faceNormal;
+                i[1].wpos.xyz += avgNoise * .1f * _Offset * faceNormal;
+                i[2].wpos.xyz += avgNoise * .1f * _Offset * faceNormal;
 
                 i[0].cpos = TransformWorldToHClip(i[0].wpos);
                 i[1].cpos = TransformWorldToHClip(i[1].wpos);
