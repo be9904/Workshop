@@ -1,2 +1,2 @@
-# Workshop-1
+# Graphics Workshop
  
