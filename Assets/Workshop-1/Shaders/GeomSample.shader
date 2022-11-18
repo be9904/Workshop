@@ -7,6 +7,7 @@ Shader "Custom/GeomSample"
         _RimPower("Rim Power", Range(1, 5)) = 1
         
         [HDR] _WireframeColor ("Wireframe Color", Color) = (1,0,0,0)
+        _WireThickness("Wire Thickness", Float) = 1
         _BreatheFrequency("Breathe Frequency", Range(0.1, 5)) = 1
         _Offset("Offset", Range(0,10)) = 0
     }
@@ -42,6 +43,7 @@ Shader "Custom/GeomSample"
             float _RimPower;
 
             half4 _WireframeColor;
+            float _WireThickness;
             float _BreatheFrequency;
             float _Offset;
             CBUFFER_END
@@ -84,18 +86,20 @@ Shader "Custom/GeomSample"
                 return o;
             }
 
-            float3 GetWireframe(g2f g)
+            float3 GetWireframe(g2f g, half4 innerColor)
             {
-                float3 albedo = float3(0,0,0);
 	            float3 barys;
 	            barys.xy = g.barycentricCoord;
 	            barys.z = 1 - barys.x - barys.y;
+                
 	            float3 deltas = fwidth(barys);
-	            float3 smoothing = deltas * .5f;
-	            float3 thickness = deltas * .1f;
-	            barys = smoothstep(thickness, thickness + smoothing, barys);
+	            float3 smoothing = deltas * 2;
+                float3 thickness = deltas * _WireThickness;
+
+                barys = smoothstep(thickness, thickness + smoothing, barys);
 	            float minBary = min(barys.x, min(barys.y, barys.z));
-	            return lerp(_WireframeColor, albedo, minBary);
+
+                return lerp(_WireframeColor, innerColor, minBary);
             }
 
             [maxvertexcount(3)]
@@ -140,8 +144,9 @@ Shader "Custom/GeomSample"
             {
                 float rimlight = pow(1 - dot(i.data.normal, i.data.viewDir), _RimPower);
                 half4 color = lerp(_InnerColor, _OuterColor, rimlight);
-                half3 wire = GetWireframe(i);
-                return color + half4(wire, 1);
+                color.a = 0.5;
+                half3 wire = GetWireframe(i, color);
+                return color * half4(wire, .5f);
             }
             ENDHLSL
         }
