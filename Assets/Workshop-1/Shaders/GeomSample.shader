@@ -4,7 +4,7 @@ Shader "Custom/GeomSample"
     {
         [HDR] _OuterColor ("Outer Color", Color) = (1,1,1,1)
         [HDR] _InnerColor ("Inner Color", Color) = (0,0,0,1)
-        _RimPower("Rim Power", Range(1, 5)) = 1
+        _RimPower("Rim Power", Range(.1, 5)) = 1
         
         [HDR] _WireframeColor ("Wireframe Color", Color) = (1,0,0,0)
         _WireThickness("Wire Thickness", Float) = 1
@@ -146,7 +146,7 @@ Shader "Custom/GeomSample"
                 half4 color = lerp(_InnerColor, _OuterColor, rimlight);
                 color.a = 0.5;
                 half3 wire = GetWireframe(i, color);
-                return color * half4(wire, .5f);
+                return half4(wire, .5f);
             }
             ENDHLSL
         }
