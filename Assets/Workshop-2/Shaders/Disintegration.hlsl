@@ -65,6 +65,7 @@ v2g vert (GeomAttributes v){
     return o;
 }
 
+#pragma region HELPER_FUNCTIONS
 float random (float2 uv){
     return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453123);
 }
@@ -91,6 +92,7 @@ float2 MultiplyUV (float4x4 mat, float2 inUV) {
     temp = mul (mat, temp);
     return temp.xy;
 }
+#pragma endregion
 
 [maxvertexcount(7)]
 void geom(triangle v2g IN[3], inout TriangleStream<g2f> triStream){
