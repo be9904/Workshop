@@ -33,7 +33,8 @@ Shader "Custom/GeomSample"
             #pragma target 3.0
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            
+
+            float _MusicVolume;
             Texture2D _NoiseTex;
             SamplerState sampler_NoiseTex;
 
@@ -116,11 +117,10 @@ Shader "Custom/GeomSample"
                 i[2].normal = faceNormal;
 
                 float avgNoise = 0.05f * (i[0].noise + i[1].noise + i[2].noise) / 3;
-                float sinTime = 1 + sin(_BreatheFrequency * _Time.z / 2);
 
-                i[0].wpos.xyz += sinTime * avgNoise * _Offset * faceNormal;
-                i[1].wpos.xyz += sinTime * avgNoise * _Offset * faceNormal;
-                i[2].wpos.xyz += sinTime * avgNoise * _Offset * faceNormal;
+                i[0].wpos.xyz += avgNoise * _Offset * _MusicVolume * faceNormal;
+                i[1].wpos.xyz += avgNoise * _Offset * _MusicVolume * faceNormal;
+                i[2].wpos.xyz += avgNoise * _Offset * _MusicVolume * faceNormal;
 
                 i[0].cpos = TransformWorldToHClip(i[0].wpos);
                 i[1].cpos = TransformWorldToHClip(i[1].wpos);
