@@ -34,5 +34,5 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _InnerColor: {r: 0.03137255, g: 0, b: 1.4980392, a: 0.7058824}
     - _OuterColor: {r: 1.4980392, g: 1.1294118, b: 0, a: 0.7058824}
-    - _WireframeColor: {r: 7.027451, g: 0, b: 32, a: 1}
+    - _WireframeColor: {r: 57.0379, g: 0, b: 56.500553, a: 1}
   m_BuildTextureStacks: []

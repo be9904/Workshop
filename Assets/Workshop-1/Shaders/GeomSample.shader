@@ -38,6 +38,8 @@ Shader "Custom/GeomSample"
             Texture2D _NoiseTex;
             SamplerState sampler_NoiseTex;
 
+            #define PI 3.14159265f
+            
             CBUFFER_START(UnityPerMaterial)
             half4 _OuterColor;
             half4 _InnerColor;
@@ -99,6 +101,12 @@ Shader "Custom/GeomSample"
 
                 barys = smoothstep(thickness, thickness + smoothing, barys);
 	            float minBary = min(barys.x, min(barys.y, barys.z));
+
+                float _r = sin(_Time.y) + 1 - 1/sqrt(2);
+                float _g = cos(_Time.y) + 1 - 1/sqrt(2);
+                float _b = sin(_Time.y + PI) + 1 - 1/sqrt(2);
+                
+                _WireframeColor = half4(_r, _g, _b, 1) * pow(2, 5);
 
                 return lerp(_WireframeColor, innerColor, minBary);
             }
